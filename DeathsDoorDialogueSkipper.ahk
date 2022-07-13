@@ -1,4 +1,6 @@
-﻿; Authors
+; Death's Door Dialogue Skipper v1.0.0-rc.1
+;
+; Authors
 ; -------
 ; Museus (Discord: Museus#7777)
 ; SpR3AD (Discord: SpR3AD#9314)
