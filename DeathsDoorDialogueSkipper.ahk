@@ -23,10 +23,10 @@ overlayWindowBackground := "ff00ff"
 overlayFontColor := "00ffff"
 
 ; The key the user will hold to trigger script
-spamKey := "f"
+spamKey := ""
 
  ; The key the script will send to the game
-confirmKey := "q"
+confirmKey := ""
 
 ;;;;;;;;;;;;;;;;;;;;;
 ; END CONFIGURATION ;
