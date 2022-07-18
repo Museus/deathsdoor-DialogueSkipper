@@ -1,4 +1,4 @@
-; Death's Door Dialogue Skipper v1.0.0-rc.1
+; Death's Door Dialogue Skipper v1.0.0
 ;
 ; Authors
 ; -------
