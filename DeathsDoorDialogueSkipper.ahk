@@ -25,8 +25,11 @@ overlayFontColor := "00ffff"
 ; The key the user will hold to trigger script
 spamKey := ""
 
- ; The key the script will send to the game
+; The key the script will send to the game
 confirmKey := ""
+
+; How many times per second to send the down/up signal
+spamCPS := 13
 
 ;;;;;;;;;;;;;;;;;;;;;
 ; END CONFIGURATION ;
@@ -44,6 +47,14 @@ if (!IsValidKey(spamKey))
 if (!IsValidKey(confirmKey))
     confirmKey := PromptUserForKey("What keyboard key do you have Confirm bound to? (Default is Q)")
 
+; Calculate delay
+; 1000ms / clicks per second = time per cycle in ms
+msPerCycle := 1000 / spamCPS
+; Each click is a down + up signal, so divide by 2
+msPerSignal := msPerCycle / 2
+; Each signal should wait 10ms between
+msSignalSent := msPerSignal - 10
+
 ; Create Skipping window
 Gui, skippingOverlay:destroy
 Gui, skippingOverlay: -Caption +E0x80000 +LastFound +OwnDialogs +Owner +AlwaysOnTop +E0x20
@@ -56,7 +67,7 @@ WinSet, TransColor, c%overlayWindowBackground% 255
 
 ; Main loop
 global textIsHidden := true
-SetKeyDelay, 10, 10
+SetKeyDelay, %msSignalSent%, 10
 Loop
 {
     if WinActive("ahk_exe DeathsDoor.exe")
