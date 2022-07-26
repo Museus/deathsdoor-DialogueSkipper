@@ -26,12 +26,14 @@ In that section, you can adjust:
  - the color of the "Skipping..." text
  - the key you want to hold to trigger the skipping script
  - the key you have Confirm bound to in-game
+ - the speed at which the button is spammed in-game in "cycles (down+up) per second"
 
 By default, these are:
  - Background: ff00ff (Magenta)
  - Font: 00ffff (Blue-green)
  - Key to hold: Prompted when launching script
  - Confirm key: Prompted when launching script
+ - Cycles per second: 13
 
 To find the colors you want, you can use https://color-hex.com/
 
