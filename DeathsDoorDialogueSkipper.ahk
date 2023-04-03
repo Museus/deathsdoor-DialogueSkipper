@@ -1,4 +1,4 @@
-; Death's Door Dialogue Skipper v1.1.0
+; Death's Door Dialogue Skipper v1.2.0
 ;
 ; Authors
 ; -------
@@ -12,6 +12,10 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #SingleInstance Force
 #MaxHotkeysPerInterval 100
 
+SetBatchLines, -1
+SetKeyDelay, -1, -1
+SendMode Input
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ; CONFIGURATION SECTION ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -22,10 +26,10 @@ overlayWindowBackground := "ff00ff"
 ; Color to make overlay text (ex: 00ffff)
 overlayFontColor := "00ffff"
 
-; The key the user will hold to trigger script
+; The key the user will hold to trigger script (using capital letters will result in you needing to press shift+key)
 spamKey := ""
 
-; The key the script will send to the game
+; The key the script will send to the game (using capital letters will result in sending shift+lowercase key)
 confirmKey := ""
 
 ; How many times per second to send the down/up signal
@@ -41,19 +45,20 @@ spamCPS := 13
 
 ; Load or prompt spam key
 if (!IsValidKey(spamKey))
-    spamKey := PromptUserForKey("Enter your desired auto-spam key:`n(visit autohotkey.com/docs/KeyList.htm for valid keys)`n`n`nUnfortunately controller is not supported at this time`, so please use a keyboard key.")
+    spamKey := PromptUserForKey("Enter your desired auto-spam key:`n(visit autohotkey.com/docs/KeyList.htm for valid keys)`n(using capital letters will result in you needing to press shift+key) `n`nUnfortunately controller is not supported at this time`, so please use a keyboard key.")
 
 ; Prompt user for confirm key
 if (!IsValidKey(confirmKey))
-    confirmKey := PromptUserForKey("What keyboard key do you have Confirm bound to? (Default is Q)")
+    confirmKey := PromptUserForKey("What keyboard key do you have Confirm bound to? `n(Default is q) `n(using capital letters will result in sending shift+lowercase key)")
 
 ; Calculate delay
-; 1000ms / clicks per second = time per cycle in ms
-msPerCycle := 1000 / spamCPS
-; Each click is a down + up signal, so divide by 2
-msPerSignal := msPerCycle / 2
-; Each signal should wait 10ms between
-msSignalSent := msPerSignal - 10
+; 10,000,000 µs / clicks per second = time per cycle in 
+msSignalSent := 10000000 / spamCPS
+
+; disable other hotkey functions
+Hotkey, %spamKey%, disablefun
+Hotkey, %spamKey%, Off
+
 
 ; Create Skipping window
 Gui, skippingOverlay:destroy
@@ -67,24 +72,54 @@ WinSet, TransColor, c%overlayWindowBackground% 255
 
 ; Main loop
 global textIsHidden := true
-SetKeyDelay, %msSignalSent%, 10
-Loop
+t1 := t2 := 0
+DllCall( "GetSystemTimePreciseAsFileTime", "Int64P",t1 )
+status := 0
+loop
 {
-    if WinActive("ahk_exe DeathsDoor.exe")
+	if WinActive("ahk_exe DeathsDoor.exe")
     {
-        spamKeyIsDown := GetKeyState(spamKey, "P")
-        if (spamKeyIsDown) {
-            ShowSkippingOverlayText()
-
-            Send {%confirmKey% down}{%confirmKey% up}
-            KeyWait % confirmKey, "L"
-        } else {
-            HideSkippingOverlayText()
-        }
-    }
-    else
+		Hotkey, %spamKey%, On
+		spamKeyIsDown := GetKeyState(spamKey, "P")
+		if (spamKeyIsDown) {
+			ShowSkippingOverlayText()
+			DllCall( "GetSystemTimePreciseAsFileTime", "Int64P",t2 )
+			if (Mod((t2-t1),(msSignalSent))<msSignalSent/2)
+			{
+				if (status=1)
+				{	
+					Send {%confirmKey% up}
+					status := 0
+				}
+			}
+			else
+			{
+				if (status=0)
+				{
+					Send {%confirmKey% down}
+					status := 1
+				}
+			}
+		}
+		else
+		{
+			HideSkippingOverlayText()
+			if (status=1)
+			{	
+				Send {%confirmKey% up}
+				status := 0
+			}
+		}
+	}
+	else
     {
+		Hotkey, %spamKey%, Off
         HideSkippingOverlayText()
+		if (status=1)
+		{	
+			Send {%confirmKey% up}
+			status := 0
+		}
         Sleep, 100
     }
 }
@@ -96,6 +131,9 @@ Loop
 ;;;;;;;;;;;;;;;;;;;;
 ; Helper Functions ;
 ;;;;;;;;;;;;;;;;;;;;
+
+disablefun:
+{}
 
 ; User prompt Functions
 
@@ -154,3 +192,4 @@ HideSkippingOverlayText()
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ; End Helper Functions ;
 ;;;;;;;;;;;;;;;;;;;;;;;;
+
