@@ -1,4 +1,4 @@
-; Death's Door Dialogue Skipper v1.2.0-rc.2
+; Death's Door Dialogue Skipper v1.2.0
 ;
 ; Authors
 ; -------
@@ -67,7 +67,7 @@ Gui, skippingOverlay:Color, c%overlayWindowBackground%
 Gui, skippingOverlay:Font, s16 q1 c%overlayFontColor%, %Font%
 Gui, skippingOverlay:margin,, 0
 Gui, skippingOverlay:Add,Text,vtext w250,
-Gui, skippingOverlay:Show, y0 x0 NoActivate, DD_SkippingOverlay_v1.2.0.rc.2
+Gui, skippingOverlay:Show, y0 x0 NoActivate, DD_SkippingOverlay_v1.2.0
 WinSet, TransColor, c%overlayWindowBackground% 255
 
 ; Main loop
@@ -82,7 +82,7 @@ loop
 		Hotkey, %spamKey%, On
 		spamKeyIsDown := GetKeyState(spamKey, "P")
 		if (spamKeyIsDown) {
-			ShowSkippingOverlayText("Skipping... (v1.2.0-rc.2)")
+			ShowSkippingOverlayText("Skipping... (v1.2.0)")
 			DllCall( "GetSystemTimePreciseAsFileTime", "Int64P",t2 )
 			if (Mod((t2-t1),(msSignalSent))<msSignalSent/2)
 			{
