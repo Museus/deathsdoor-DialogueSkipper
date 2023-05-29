@@ -1,4 +1,4 @@
-; Death's Door Dialogue Skipper v1.2.0
+; Death's Door Dialogue Skipper v1.2.1
 ;
 ; Authors
 ; -------
@@ -15,6 +15,8 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 SetBatchLines, -1
 SetKeyDelay, -1, -1
 SendMode Input
+
+DllCall("Winmm\timeBeginPeriod", "UInt", 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ; CONFIGURATION SECTION ;
@@ -120,8 +122,9 @@ loop
 			Send {%confirmKey% up}
 			status := 0
 		}
-        Sleep, 100
+        DllCall("Sleep", "UInt", 100)
     }
+	DllCall("Sleep", "UInt", 1)
 }
 
 ;;;;;;;;;;;;;;;;;;;;
