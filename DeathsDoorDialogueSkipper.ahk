@@ -1,11 +1,10 @@
-; Death's Door Dialogue Skipper v1.2.1
+; Death's Door Dialogue Skipper v1.2.2
 ;
 ; Authors
 ; -------
 ; Museus (Discord: Museus#7777)
 ; SpR3AD (Discord: SpR3AD#9314)
 ;
-; This script was based off of TW3AutoSpam (https://gist.github.com/Gaztin/391afe70ceeb1c79005f21645cdc480d)
 
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
@@ -23,16 +22,19 @@ DllCall("Winmm\timeBeginPeriod", "UInt", 1)
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Color to make overlay background, for Chromakey purposes (ex: ff00ff)
-overlayWindowBackground := "ff00ff"
+overlayWindowBackground := "000000"
 
 ; Color to make overlay text (ex: 00ffff)
-overlayFontColor := "00ffff"
+overlayFontColor := "ffffff"
 
 ; The key the user will hold to trigger script (using capital letters will result in you needing to press shift+key)
 spamKey := ""
 
 ; The key the script will send to the game (using capital letters will result in sending shift+lowercase key)
 confirmKey := ""
+
+; option to use the toggle function
+toggle := true
 
 ; How many times per second to send the down/up signal
 spamCPS := 13
@@ -51,7 +53,15 @@ if (!IsValidKey(spamKey))
 
 ; Prompt user for confirm key
 if (!IsValidKey(confirmKey))
+{
     confirmKey := PromptUserForKey("What keyboard key do you have Confirm bound to? `n(Default is q) `n(using capital letters will result in sending shift+lowercase key)")
+	MsgBox, 4,,Would you like to use the toggle function? (press Yes or No)
+	IfMsgBox Yes
+		toggle := true
+	else
+		toggle := false
+}
+
 
 ; Calculate delay
 ; 10,000,000 µs / clicks per second = time per cycle in 
@@ -68,48 +78,110 @@ Gui, skippingOverlay: -Caption +E0x80000 +LastFound +OwnDialogs +Owner +AlwaysOn
 Gui, skippingOverlay:Color, c%overlayWindowBackground%
 Gui, skippingOverlay:Font, s16 q1 c%overlayFontColor%, %Font%
 Gui, skippingOverlay:margin,, 0
-Gui, skippingOverlay:Add,Text,vtext w250,
-Gui, skippingOverlay:Show, y0 x0 NoActivate, DD_SkippingOverlay_v1.2.1
+Gui, skippingOverlay:Add,Text,vtext w300,
+Gui, skippingOverlay:Show, y0 x0 NoActivate, DD_SkippingOverlay_v1.2.2
 WinSet, TransColor, c%overlayWindowBackground% 255
+texttoshow := "Skipping... (v1.2.2)"
 
 ; Main loop
 global textIsHidden := true
 t1 := t2 := 0
 DllCall( "GetSystemTimePreciseAsFileTime", "Int64P",t1 )
 status := 0
+toggleactive := false
+justpressed := false
 loop
 {
 	if WinActive("ahk_exe DeathsDoor.exe")
     {
 		Hotkey, %spamKey%, On
 		spamKeyIsDown := GetKeyState(spamKey, "P")
-		if (spamKeyIsDown) {
-			ShowSkippingOverlayText("Skipping... (v1.2.1)")
-			DllCall( "GetSystemTimePreciseAsFileTime", "Int64P",t2 )
-			if (Mod((t2-t1),(msSignalSent))<msSignalSent/2)
+		
+		; hold key to skip text 
+		if (toggle == false)
+		{
+			if (spamKeyIsDown) 
 			{
+				ShowSkippingOverlayText(texttoshow)
+				DllCall( "GetSystemTimePreciseAsFileTime", "Int64P",t2 )
+				if (Mod((t2-t1),(msSignalSent))<msSignalSent/2)
+				{
+					if (status=1)
+					{	
+						Send {%confirmKey% up}
+						status := 0
+					}
+				}
+				else
+				{
+					if (status=0)
+					{
+						Send {%confirmKey% down}
+						status := 1
+					}
+				}
+			}
+			else
+			{
+				HideSkippingOverlayText()
 				if (status=1)
 				{	
 					Send {%confirmKey% up}
 					status := 0
 				}
 			}
-			else
-			{
-				if (status=0)
-				{
-					Send {%confirmKey% down}
-					status := 1
-				}
-			}
 		}
+		; toggle key to skip
 		else
 		{
-			HideSkippingOverlayText()
-			if (status=1)
-			{	
-				Send {%confirmKey% up}
-				status := 0
+			if (spamKeyIsDown) 
+			{
+				if (justpressed == false)
+				{
+					if (toggleactive == true)
+					{
+						toggleactive := false
+					}
+					else
+					{
+						toggleactive := true
+					}
+					justpressed := true
+				}
+			}
+			else
+			{
+				justpressed := false
+			}
+			if (toggleactive == true)
+			{
+				ShowSkippingOverlayText(texttoshow)
+				DllCall( "GetSystemTimePreciseAsFileTime", "Int64P",t2 )
+				if (Mod((t2-t1),(msSignalSent))<msSignalSent/2)
+				{
+					if (status=1)
+					{	
+						Send {%confirmKey% up}
+						status := 0
+					}
+				}
+				else
+				{
+					if (status=0)
+					{
+						Send {%confirmKey% down}
+						status := 1
+					}
+				}
+			}
+			else
+			{
+				HideSkippingOverlayText()
+				if (status=1)
+				{	
+					Send {%confirmKey% up}
+					status := 0
+				}
 			}
 		}
 	}
