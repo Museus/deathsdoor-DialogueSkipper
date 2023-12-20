@@ -1,4 +1,4 @@
-; Death's Door Dialogue Skipper v1.2.2
+; Death's Door Dialogue Skipper v1.3.0
 ;
 ; Authors
 ; -------
@@ -79,9 +79,9 @@ Gui, skippingOverlay:Color, c%overlayWindowBackground%
 Gui, skippingOverlay:Font, s16 q1 c%overlayFontColor%, %Font%
 Gui, skippingOverlay:margin,, 0
 Gui, skippingOverlay:Add,Text,vtext w300,
-Gui, skippingOverlay:Show, y0 x0 NoActivate, DD_SkippingOverlay_v1.2.2
+Gui, skippingOverlay:Show, y0 x0 NoActivate, DD_SkippingOverlay_v1.3.0
 WinSet, TransColor, c%overlayWindowBackground% 255
-texttoshow := "Skipping... (v1.2.2)"
+texttoshow := "Skipping... (v1.3.0)"
 
 ; Main loop
 global textIsHidden := true
