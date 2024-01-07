@@ -49,12 +49,12 @@ spamCPS := 13
 
 ; Load or prompt spam key
 if (!IsValidKey(spamKey))
-    spamKey := PromptUserForKey("Enter your desired auto-spam key:`n(visit autohotkey.com/docs/KeyList.htm for valid keys)`n(using capital letters will result in you needing to press shift+key) `n`nUnfortunately controller is not supported at this time`, so please use a keyboard key.")
+    spamKey := PromptUserForKey("Enter your desired auto-spam key:`n(visit autohotkey.com/docs/KeyList.htm for valid keys)`n`nUnfortunately controller is not supported at this time`, so please use a keyboard key.")
 
 ; Prompt user for confirm key
 if (!IsValidKey(confirmKey))
 {
-    confirmKey := PromptUserForKey("What keyboard key do you have Confirm bound to? `n(Default is q) `n(using capital letters will result in sending shift+lowercase key)")
+    confirmKey := PromptUserForKey("What keyboard key do you have Confirm bound to? `n(Default is q)")
 	MsgBox, 4,,Would you like to use the toggle function? (press Yes or No)
 	IfMsgBox Yes
 		toggle := true
